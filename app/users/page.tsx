@@ -8,6 +8,7 @@ interface User {
 
 const UsersPage = async () => {
   const res = await fetch(baseURL + "/api/users", { cache: "no-cache" });
+  console.log("res", res);
   const resBody = await res.json();
   const users: User[] = resBody.users;
 
