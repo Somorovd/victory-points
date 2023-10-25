@@ -7,12 +7,18 @@ interface User {
 }
 
 const UsersPage = async () => {
-  const res = await fetch(baseURL + "/api/users", { cache: "no-cache" });
-  console.log("res", res);
-  const resBody = await res.json();
-  const users: User[] = resBody.users;
+  let users: User[] | null = null;
+  try {
+    console.log(`Sending request to --> ${baseURL + "/api/users"}`);
+    const res = await fetch(baseURL + "/api/users", { cache: "no-cache" });
+    const resBody = await res.json();
+    users = resBody.users;
+    console.log("res", res);
+  } catch (e) {
+    console.log("ERROR: Failed to get users");
+  }
 
-  return users.map((user) => <p key={user.id}>{user.name}</p>);
+  return users?.map((user) => <p key={user.id}>{user.name}</p>);
 };
 
 export default UsersPage;
