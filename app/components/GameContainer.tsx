@@ -1,5 +1,5 @@
 import React from "react";
-import NoSSRWrapper from "../NoSSRWrapper";
+import NoSSRWrapper from "./NoSSRWrapper";
 
 const GameContainer = ({ game }: { game: string }) => {
   return (

@@ -7,6 +7,10 @@
   height: 100%;
 }
 
+* {
+  box-sizing: bo
+}
+
 body {
   height: 100%;
 }

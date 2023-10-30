@@ -1,4 +1,4 @@
-import GameContainer from "@/app/components/GameContainer/GameContainer";
+import GameContainer from "@/app/components/GameContainer";
 import React from "react";
 
 const HeartsGame = () => {
