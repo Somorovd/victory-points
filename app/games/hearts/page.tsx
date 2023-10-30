@@ -1,7 +1,8 @@
+import GameContainer from "@/app/components/GameContainer/GameContainer";
 import React from "react";
 
 const HeartsGame = () => {
-  return <div>HeartsGame</div>;
+  return <GameContainer game="hearts" />;
 };
 
 export default HeartsGame;

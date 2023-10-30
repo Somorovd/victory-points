@@ -15,8 +15,9 @@ const outputFile = outputPathPrefix + inputFile;
 const buildCommand = `
 npx parcel build src/${inputFile}/index.html --out-dir ${outputFile} &&
 mv ${outputFile}/main.*.js ${outputFile}/main.js &&
+rm -rf ${outputFile}/index.html &&
 mv ${outputFile}/${inputFile}/* ${outputFile}/ &&
-rm -rf ${outputFile}/${inputFile}
+rm -rf ${outputFile}/${inputFile} 
 `;
 
 exec(buildCommand, (error, stdout) => {
