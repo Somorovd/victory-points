@@ -1,0 +1,41 @@
+{
+	"name": "phaser3-parcel-template",
+	"version": "1.0.0",
+	"description": "A template project for Phaser 3 using Parceljs",
+	"type": "module",
+	"scripts": {
+		"start": "parcel src/index.html -p 8000",
+		"build": "parcel build src/index.html --out-dir dist",
+		"custom-start": "node cli/start.js",
+		"custom-build": "node cli/build.js"
+	},
+	"author": "supertommy",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/ourcade/phaser3-parcel-template.git"
+	},
+	"homepage": "https://github.com/ourcade/phaser3-parcel-template",
+	"devDependencies": {
+		"@babel/core": "^7.10.5",
+		"@babel/plugin-proposal-class-properties": "^7.10.4",
+		"babel-eslint": "^10.1.0",
+		"eslint": "^6.8.0",
+		"minimist": ">=1.2.2",
+		"parcel-plugin-static-files-copy": "^2.4.3"
+	},
+	"dependencies": {
+		"parcel-bundler": "^1.12.5",
+		"parcel-namer-custom": "^0.2.0",
+		"phaser": "^3.55.2",
+		"ts-node": "^10.9.1",
+		"typescript": "^5.2.2"
+	},
+	"staticFiles": {
+		"staticPath": "public",
+		"watcherGlob": "**/**"
+	},
+	"parcel-namer-custom": {
+		"index.html": "test_[name].[ext]"
+	}
+}
