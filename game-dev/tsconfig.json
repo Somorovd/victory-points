@@ -22,4 +22,7 @@
 			"node_module/phaser/types"
 		],
 	},
+	"include": [
+		"src/**/*"
+	]
 }

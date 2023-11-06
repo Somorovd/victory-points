@@ -7,7 +7,6 @@ import Link from "next/link";
 
 const HeaderBar = () => {
   const { user } = useUser();
-  console.log(user);
 
   return (
     <div className="w-full h-16 flex flex-row items-center bg-yellow-500 p-6">
