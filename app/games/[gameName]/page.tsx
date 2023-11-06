@@ -11,7 +11,7 @@ interface GamePageParams {
 
 const GamePage = ({ params }: { params: GamePageParams }) => {
   const { gameName } = params;
-  const socketUrl = process.env.SOCKET_URL;
+  const socketUrl = process.env.SOCKET_URL || process.env.VERCEL_URL;
 
   return (
     <>

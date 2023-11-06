@@ -4,59 +4,48 @@ import { NextApiRequest } from "next";
 import { NextApiResponseServerIo } from "@/types";
 
 export const config = {
-  api: {
-    bodyParser: false,
-  },
+	api: {
+		bodyParser: false,
+	},
 };
 
 const ioHandler = (req: NextApiRequest, res: NextApiResponseServerIo) => {
-  if (!res.socket.server.io) {
-    const path = "/api/socket/io";
-    const httpServer: NetServer = res.socket.server as any;
+	if (!res.socket.server.io) {
+		const path = "/api/socket/io";
+		const httpServer: NetServer = res.socket.server as any;
+		const io = new ServerIO(httpServer, {
+			path,
+			addTrailingSlash: false,
+		});
+		res.socket.server.io = io;
 
-    const vercelEnv = process.env.VERCEL_ENV;
-    let vercelPreviewUrl;
-    if (vercelEnv === "preview") {
-      vercelPreviewUrl = `https://${req?.query?.hostname}`;
-      console.log(vercelPreviewUrl);
-    }
+		io.on("connection", (socket) => {
+			console.log(`user connected: ${socket.id}`);
 
-    const io = new ServerIO(httpServer, {
-      path,
-      addTrailingSlash: false,
-      cors: {
-        origin: vercelPreviewUrl,
-      },
-    });
-    res.socket.server.io = io;
+			socket.on("join", ({ room }: { room: string }) => {
+				console.log(`joining room /${room}/`);
+				socket.join(room);
+			});
 
-    io.on("connection", (socket) => {
-      console.log(`user connected: ${socket.id}`);
+			socket.on(
+				"gameEvent",
+				({
+					room,
+					event,
+					data,
+				}: {
+					room: string;
+					event: string;
+					data: Record<string, any>;
+				}) => {
+					console.log(`Room /${room}/ recieved event <${event}>`);
+					io.to(room).emit(event, data);
+				}
+			);
+		});
+	}
 
-      socket.on("join", ({ room }: { room: string }) => {
-        console.log(`joining room /${room}/`);
-        socket.join(room);
-      });
-
-      socket.on(
-        "gameEvent",
-        ({
-          room,
-          event,
-          data,
-        }: {
-          room: string;
-          event: string;
-          data: Record<string, any>;
-        }) => {
-          console.log(`Room /${room}/ recieved event <${event}>`);
-          io.to(room).emit(event, data);
-        }
-      );
-    });
-  }
-
-  res.end();
+	res.end();
 };
 
 export default ioHandler;

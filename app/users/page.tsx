@@ -1,5 +1,5 @@
 import React from "react";
-const baseURL = process.env.BASE_URL;
+const baseURL = process.env.BASE_URL || process.env.VERCEL_URL;
 
 interface User {
   id: string;
