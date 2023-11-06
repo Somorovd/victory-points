@@ -4,10 +4,9 @@
 	"description": "A template project for Phaser 3 using Parceljs",
 	"type": "module",
 	"scripts": {
-		"start": "parcel src/index.html -p 8000",
+		"start": "node cli/start.js",
 		"build": "parcel build src/index.html --out-dir dist",
-		"custom-start": "node cli/start.js",
-		"custom-build": "node cli/build.js"
+		"build-prod": "node cli/build.js"
 	},
 	"author": "supertommy",
 	"license": "MIT",
@@ -28,6 +27,7 @@
 		"parcel-bundler": "^1.12.5",
 		"parcel-namer-custom": "^0.2.0",
 		"phaser": "^3.55.2",
+		"socket.io-client": "^4.7.2",
 		"ts-node": "^10.9.1",
 		"typescript": "^5.2.2"
 	},
