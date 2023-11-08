@@ -1,7 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
-import HeaderBar from "@/components/HeaderBar";
+import { ThemeProvider } from "@/components/providers/theme-provider";
 
 export const metadata: Metadata = {
 	title: "Victory Points",
@@ -14,13 +14,19 @@ export default function RootLayout({
 }) {
 	return (
 		<ClerkProvider>
-			<html lang="en">
+			<html lang="en" suppressHydrationWarning>
 				<head>
 					<link rel="icon" href="/icon.svg" type="image/svg+xml" sizes="any" />
 				</head>
 				<body>
-					<HeaderBar />
-					{children}
+					<ThemeProvider
+						attribute="class"
+						defaultTheme="dark"
+						enableSystem={false}
+						storageKey="vp-theme"
+					>
+						{children}
+					</ThemeProvider>
 				</body>
 			</html>
 		</ClerkProvider>
