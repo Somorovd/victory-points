@@ -9,6 +9,62 @@ generator client {
 }
 
 model User {
-  id   String @id @default(cuid())
-  name String
+  id               String           @id @default(cuid())
+  friends          User[]           @relation("Friends")
+  friendsRelation  User[]           @relation("Friends")
+  lobbies          UsersLobbies[]
+  incomingRequests FriendRequests[] @relation("IncomingRequests")
+  outgoingRequests FriendRequests[] @relation("OutgoingRequests")
+
+  createdAt DateTime @default(now())
+}
+
+model FriendRequests {
+  fromId String
+  toId   String
+
+  from User @relation("IncomingRequests", fields: [fromId], references: [id], onDelete: Cascade)
+  to   User @relation("OutgoingRequests", fields: [toId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@id([fromId, toId])
+  @@index([fromId])
+  @@index([toId])
+}
+
+model Game {
+  name       String  @id @unique
+  minPlayers Int
+  maxPlayers Int
+  lobbies    Lobby[]
+
+  createdAt DateTime @default(now())
+}
+
+model Lobby {
+  id        String         @id @default(cuid())
+  gameName  String
+  password  String
+  capacity  Int
+  game      Game           @relation(fields: [gameName], references: [name], onDelete: Cascade)
+  users     UsersLobbies[]
+  // gameState -- save to file?
+  createdAt DateTime       @default(now())
+
+  @@index([gameName])
+}
+
+model UsersLobbies {
+  userId  String
+  lobbyId String
+  isHost  Boolean
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lobby     Lobby    @relation(fields: [lobbyId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@id([userId, lobbyId])
+  @@index([userId])
+  @@index([lobbyId])
 }
