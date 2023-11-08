@@ -1,0 +1,7 @@
+Tech:
+NextJS
+typescript
+tailwind
+prisma
+shadcn-ui
+zod
