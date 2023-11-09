@@ -27,6 +27,8 @@ import { Button } from "@/components/ui/button";
 import { useModal } from "@/hooks/use-modal-store";
 import { useUser } from "@clerk/nextjs";
 import { useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import { Lobby } from "@prisma/client";
 
 const formSchema = z.object({
   name: z.string().min(1, {
@@ -41,6 +43,8 @@ interface CreateLobbyModalProps {
 
 const CreateLobbyModal = ({ gameName }: CreateLobbyModalProps) => {
   const { user } = useUser();
+  const router = useRouter();
+  const pathname = usePathname();
   const { isOpen, onClose, type } = useModal();
 
   const isModalOpen = isOpen && type === "createLobby";
@@ -55,18 +59,22 @@ const CreateLobbyModal = ({ gameName }: CreateLobbyModalProps) => {
 
   useEffect(() => {
     form.setValue("name", `${user?.username}'s lobby`);
-  }, [user]);
+  }, [user, form]);
 
   const isLoading = form.formState.isSubmitting;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axios.post("/api/lobbies", {
-        gameName,
-        ...values,
-      });
+      const lobby = (await axios
+        .post("/api/lobbies", {
+          gameName,
+          ...values,
+        })
+        .then((res) => res.data)) as Lobby;
+
       onClose();
       form.reset();
+      router.push(`${pathname}/${lobby.id}`);
     } catch (e) {
       console.log(e);
     }

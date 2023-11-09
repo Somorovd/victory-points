@@ -5,6 +5,11 @@ const games = [
     maxPlayers: 2,
   },
   {
+    name: "hearts",
+    minPlayers: 4,
+    maxPlayers: 4,
+  },
+  {
     name: "connect-4",
     minPlayers: 2,
     maxPlayers: 2,
