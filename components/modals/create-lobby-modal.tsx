@@ -1,5 +1,7 @@
 "use client";
 
+import axios from "axios";
+
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -22,49 +24,71 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
+import { useModal } from "@/hooks/use-modal-store";
+import { useUser } from "@clerk/nextjs";
+import { useEffect } from "react";
 
 const formSchema = z.object({
-  x: z.string().min(1, {
-    message: "x is required",
+  name: z.string().min(1, {
+    message: "name is required",
   }),
-  y: z.string().min(1, {
-    message: "x is required",
-  }),
+  password: z.string(),
 });
 
-const InitialModal = () => {
-  const [isMounted, setIsMounted] = useState(false);
+interface CreateLobbyModalProps {
+  gameName: String;
+}
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+const CreateLobbyModal = ({ gameName }: CreateLobbyModalProps) => {
+  const { user } = useUser();
+  const { isOpen, onClose, type } = useModal();
+
+  const isModalOpen = isOpen && type === "createLobby";
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      x: "",
-      y: "",
+      name: "",
+      password: "",
     },
   });
+
+  useEffect(() => {
+    form.setValue("name", `${user?.username}'s lobby`);
+  }, [user]);
 
   const isLoading = form.formState.isSubmitting;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+    try {
+      await axios.post("/api/lobbies", {
+        gameName,
+        ...values,
+      });
+      onClose();
+      form.reset();
+    } catch (e) {
+      console.log(e);
+    }
   };
 
-  if (!isMounted) return null;
+  const handleClose = () => {
+    form.reset();
+    onClose();
+  };
 
   return (
-    <Dialog open>
+    <Dialog
+      open={isModalOpen}
+      onOpenChange={handleClose}
+    >
       <DialogContent className="bg-white text-black p-0 overflow-hidden">
         <DialogHeader className="pt-8 px-6">
           <DialogTitle className="text-2xl text-center font-bold">
-            Modal Title Here
+            Create New Lobby
           </DialogTitle>
           <DialogDescription className="text-center text-zinc-600">
-            This is a description
+            Give your lobby a name and specify your prefered game settings
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -73,23 +97,19 @@ const InitialModal = () => {
             className="space-y-8"
           >
             <div className="space-y-8 px-6">
-              <div className="flex items-center justify-center text-center">
-                IMAGE UPDLOAD
-              </div>
-
               <FormField
                 control={form.control}
-                name="x"
+                name="name"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="uppercase text-xs font-bold">
-                      X
+                      Lobby Name
                     </FormLabel>
                     <FormControl>
                       <Input
                         disabled={isLoading}
                         className="bg-zinc-300/50 border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-                        placeholder="Enter value for x"
+                        placeholder="value for x"
                         {...field}
                       />
                     </FormControl>
@@ -113,4 +133,4 @@ const InitialModal = () => {
   );
 };
 
-export default InitialModal;
+export default CreateLobbyModal;

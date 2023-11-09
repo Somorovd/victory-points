@@ -5,3 +5,4 @@ tailwind
 prisma
 shadcn-ui
 zod
+zustand

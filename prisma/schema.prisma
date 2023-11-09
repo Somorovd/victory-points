@@ -13,9 +13,10 @@ model User {
   username         String
   friends          User[]           @relation("Friends")
   friendsRelation  User[]           @relation("Friends")
-  lobbies          UsersLobbies[]
   incomingRequests FriendRequests[] @relation("IncomingRequests")
   outgoingRequests FriendRequests[] @relation("OutgoingRequests")
+  hostedLobbies    Lobby[]          @relation("HostedLobbies")
+  joinedLobbies    Lobby[]          @relation("JoinedLobbies")
 
   createdAt DateTime @default(now())
 }
@@ -44,28 +45,21 @@ model Game {
 }
 
 model Lobby {
-  id        String         @id @default(cuid())
-  gameName  String
-  password  String
-  capacity  Int
-  game      Game           @relation(fields: [gameName], references: [name], onDelete: Cascade)
-  users     UsersLobbies[]
-  // gameState -- save to file?
-  createdAt DateTime       @default(now())
+  id         String  @id @default(cuid())
+  gameName   String
+  hostId     String
+  name       String
+  password   String?
+  inviteCode String
+  capacity   Int
+
+  game  Game   @relation(fields: [gameName], references: [name], onDelete: Cascade)
+  host  User   @relation("HostedLobbies", fields: [hostId], references: [id], onDelete: Cascade)
+  users User[] @relation("JoinedLobbies")
+
+  createdAt DateTime @default(now())
+  userId    String?
 
   @@index([gameName])
-}
-
-model UsersLobbies {
-  userId  String
-  lobbyId String
-  isHost  Boolean
-
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  lobby     Lobby    @relation(fields: [lobbyId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-
-  @@id([userId, lobbyId])
-  @@index([userId])
-  @@index([lobbyId])
+  @@index([hostId])
 }

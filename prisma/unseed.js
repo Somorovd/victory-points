@@ -1,20 +1,11 @@
 const { PrismaClient } = require("@prisma/client");
-const { users } = require("./users");
-const { games } = require("./games");
 
 const prisma = new PrismaClient();
 
-async function unseedTable(table, data) {
-  for (let entry of data) {
-    await table.deleteMany({
-      where: { ...entry },
-    });
-  }
-}
-
 async function main() {
-  unseedTable(prisma.user, users);
-  unseedTable(prisma.game, games);
+  await prisma.user.deleteMany();
+  await prisma.game.deleteMany();
+  await prisma.lobby.deleteMany();
 }
 
 main()

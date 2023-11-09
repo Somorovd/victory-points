@@ -1,25 +1,34 @@
-import React from "react";
-import dynamic from "next/dynamic";
+import { redirect } from "next/navigation";
+import GameAboutSection from "@/components/game/game-about-section";
+import GameLobbySelector from "@/components/game/game-lobby-selector";
+import { db } from "@/lib/db";
+import { LobbyWithHost } from "@/types";
 
-const GameContainer = dynamic(() => import("@/components/GameContainer"), {
-	ssr: false,
-});
+const GamePage = async ({ params }: { params: { gameName: string } }) => {
+  const game = await db.game.findUnique({
+    where: { name: params.gameName },
+    include: {
+      lobbies: {
+        include: {
+          host: true,
+        },
+      },
+    },
+  });
 
-interface GamePageParams {
-	gameName: string;
-}
+  if (!game) {
+    redirect("/games");
+  }
 
-const GamePage = ({ params }: { params: GamePageParams }) => {
-	const { gameName } = params;
-	const socketUrl = process.env.SOCKET_URL || process.env.VERCEL_URL;
-
-	return (
-		<>
-			<div className="h-full flex flex-row justify-center items-center">
-				<GameContainer name={gameName} socketUrl={socketUrl} />
-			</div>
-		</>
-	);
+  return (
+    <div className="flex flex-col items-center">
+      <GameLobbySelector
+        gameName={game.name}
+        lobbies={game.lobbies as LobbyWithHost[]}
+      />
+      <GameAboutSection game={game} />
+    </div>
+  );
 };
 
 export default GamePage;
