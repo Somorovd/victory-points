@@ -6,18 +6,15 @@ const Browse = async () => {
   const games = await db.game.findMany();
 
   return (
-    <div className="h-full w-full flex justify-cente">
-      <div
-        id="games-container"
-        className="mx-auto w-[1200px] bg-black"
-      >
-        <h2 className="text-white text-2xl font-bold p-4 bg-gray-800">
+    <div className="w-full flex justify-center">
+      <div className="w-full">
+        <h2 className="text-zinc-100 text-2xl font-bold p-4 bg-zinc-800">
           Featured Games
         </h2>
         <div id="games-filters"></div>
         <div
           id="games-grid"
-          className="grid grid-cols-3 gap-2 p-4"
+          className="grid grid-cols-3 gap-2 p-4 border-2 border-zinc-700"
         >
           {games.map((game) => (
             <GameCard

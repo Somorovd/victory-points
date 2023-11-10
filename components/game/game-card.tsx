@@ -12,7 +12,7 @@ interface GameCardProps {
 const GameCard = ({ author, filename, img, name }: GameCardProps) => {
   return (
     <Link href={`/games/${filename}`}>
-      <div className="bg-gray-900 hover:bg-gray-700 rounded-md h-[250px] text-white overflow-hidden p-2">
+      <div className="bg-zinc-900 hover:bg-zinc-700 rounded-md h-[250px] text-zinc-100 overflow-hidden p-2">
         <div className="bg-blue-400 h-[75%] rounded-md overflow-hidden">
           <Image
             className=""
