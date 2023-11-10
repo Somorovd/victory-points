@@ -37,13 +37,13 @@ const formSchema = z.object({
   password: z.string(),
 });
 
-const CreateLobbyModal = () => {
+const JoinLobbyModal = () => {
   const { isOpen, onClose, type, data } = useModal();
   const { user } = useUser();
   const router = useRouter();
   const pathname = usePathname();
 
-  const isModalOpen = isOpen && type === "createLobby";
+  const isModalOpen = isOpen && type === "joinLobby";
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -138,4 +138,4 @@ const CreateLobbyModal = () => {
   );
 };
 
-export default CreateLobbyModal;
+export default JoinLobbyModal;

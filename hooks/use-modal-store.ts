@@ -1,7 +1,7 @@
 import { Game } from "@prisma/client";
 import { create } from "zustand";
 
-export type ModalType = "createLobby";
+export type ModalType = "createLobby" | "joinLobby";
 
 interface ModalData {
   game?: Game;

@@ -60,7 +60,6 @@ model Lobby {
   users User[] @relation("JoinedLobbies")
 
   createdAt DateTime @default(now())
-  userId    String?
 
   @@index([gameId])
   @@index([hostId])
