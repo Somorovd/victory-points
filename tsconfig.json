@@ -22,6 +22,6 @@
 			"@/*": ["./*"]
 		}
 	},
-	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "prisma/seed.js", "prisma/users.js"],
+	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "prisma/seeding/seed.js", "prisma/seeding/users.js"],
 	"exclude": ["node_modules", "game-dev"]
 }

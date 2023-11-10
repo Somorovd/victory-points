@@ -37,15 +37,11 @@ const formSchema = z.object({
   password: z.string(),
 });
 
-interface CreateLobbyModalProps {
-  gameName: String;
-}
-
-const CreateLobbyModal = ({ gameName }: CreateLobbyModalProps) => {
+const CreateLobbyModal = () => {
+  const { isOpen, onClose, type, data } = useModal();
   const { user } = useUser();
   const router = useRouter();
   const pathname = usePathname();
-  const { isOpen, onClose, type } = useModal();
 
   const isModalOpen = isOpen && type === "createLobby";
 
@@ -67,9 +63,10 @@ const CreateLobbyModal = ({ gameName }: CreateLobbyModalProps) => {
     try {
       const lobby = (await axios
         .post("/api/lobbies", {
-          gameName,
+          gameId: data?.game?.id as string,
           ...values,
         })
+        // what about bad requests or errors?
         .then((res) => res.data)) as Lobby;
 
       onClose();
@@ -93,7 +90,7 @@ const CreateLobbyModal = ({ gameName }: CreateLobbyModalProps) => {
       <DialogContent className="bg-white text-black p-0 overflow-hidden">
         <DialogHeader className="pt-8 px-6">
           <DialogTitle className="text-2xl text-center font-bold">
-            Create New Lobby
+            Create a New {data?.game?.name} Lobby
           </DialogTitle>
           <DialogDescription className="text-center text-zinc-600">
             Give your lobby a name and specify your prefered game settings

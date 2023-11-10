@@ -3,22 +3,30 @@
 import React, { useEffect } from "react";
 
 interface GameContainerProps {
-  name: string;
+  lobbyId: string;
+  filename: string;
   socketUrl: string | undefined;
 }
 
-const GameContainer = ({ name, socketUrl }: GameContainerProps) => {
+const GameContainer = ({
+  lobbyId,
+  filename,
+  socketUrl,
+}: GameContainerProps) => {
   useEffect(() => {
-    sessionStorage.setItem("roomId", name);
+    sessionStorage.setItem("roomId", lobbyId);
     sessionStorage.setItem("socketUrl", socketUrl || "undefined");
-  }, [name, socketUrl]);
+  }, [lobbyId, socketUrl]);
 
   return (
     <>
       {sessionStorage.getItem("socketUrl") !== "undefined" && (
         <>
           <div id="game-container"></div>
-          <script src={`/${name}/main.js`} async></script>
+          <script
+            src={`/${filename}/main.js`}
+            async
+          ></script>
         </>
       )}
     </>

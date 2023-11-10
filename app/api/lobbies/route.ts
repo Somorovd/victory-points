@@ -6,8 +6,12 @@ import { db } from "@/lib/db";
 
 export async function POST(req: Request) {
   try {
-    const { name, gameName } = await req.json();
+    const { name, gameId } = await req.json();
     const user = await currentUser();
+
+    if (!gameId) {
+      return new NextResponse("Bad Request - missing gameId", { status: 400 });
+    }
 
     if (!user) {
       return new NextResponse("Unauthorized", { status: 401 });
@@ -16,7 +20,7 @@ export async function POST(req: Request) {
     const lobby = await db.lobby.create({
       data: {
         name,
-        gameName,
+        gameId,
         password: "password",
         inviteCode: uuidv4(),
         capacity: 1,

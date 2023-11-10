@@ -3,22 +3,25 @@
 import { Button } from "@/components/ui/button";
 import { useModal } from "@/hooks/use-modal-store";
 import { LobbyWithHost } from "@/types";
+import { Game } from "@prisma/client";
 
 interface GameLobbySelectorProps {
-  gameName: string;
+  game: Game;
   lobbies: LobbyWithHost[];
 }
 
-const GameLobbySelector = ({ gameName, lobbies }: GameLobbySelectorProps) => {
+const GameLobbySelector = ({ game, lobbies }: GameLobbySelectorProps) => {
   const { onOpen } = useModal();
 
   return (
     <div className="w-full">
       <div className="bg-zinc-800 px-6 py-2 font-bold rounded-t-lg uppercase">
-        <h2>{gameName}</h2>
+        <h2>{game.name}</h2>
       </div>
       <div className="h-[600px] border-zinc-800 border-2 rounded-b-lg">
-        <Button onClick={() => onOpen("createLobby")}>Create Lobby</Button>
+        <Button onClick={() => onOpen("createLobby", { game })}>
+          Create Lobby
+        </Button>
         <div></div>
         {lobbies.map((lobby) => (
           <div

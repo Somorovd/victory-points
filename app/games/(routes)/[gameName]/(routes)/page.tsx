@@ -2,11 +2,10 @@ import { redirect } from "next/navigation";
 import GameAboutSection from "@/components/game/game-about-section";
 import GameLobbySelector from "@/components/game/game-lobby-selector";
 import { db } from "@/lib/db";
-import { LobbyWithHost } from "@/types";
 
 const GamePage = async ({ params }: { params: { gameName: string } }) => {
   const game = await db.game.findUnique({
-    where: { name: params.gameName },
+    where: { filename: params.gameName },
     include: {
       lobbies: {
         include: {
@@ -23,8 +22,8 @@ const GamePage = async ({ params }: { params: { gameName: string } }) => {
   return (
     <div className="flex flex-col items-center">
       <GameLobbySelector
-        gameName={game.name}
-        lobbies={game.lobbies as LobbyWithHost[]}
+        game={game}
+        lobbies={game.lobbies}
       />
       <GameAboutSection game={game} />
     </div>

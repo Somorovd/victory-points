@@ -15,7 +15,7 @@ export const ModalProvider = () => {
 
   return (
     <>
-      <CreateLobbyModal gameName={"tic-tac-toe"} />
+      <CreateLobbyModal />
     </>
   );
 };

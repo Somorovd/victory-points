@@ -4,17 +4,21 @@ import Image from "next/image";
 
 interface GameCardProps {
   author: string;
-  id: string;
+  filename: string;
   img?: string;
   name: string;
 }
 
-const GameCard = ({ author, id, img, name }: GameCardProps) => {
+const GameCard = ({ author, filename, img, name }: GameCardProps) => {
   return (
-    <Link href={`/games/${id}`}>
+    <Link href={`/games/${filename}`}>
       <div className="bg-gray-900 hover:bg-gray-700 rounded-md h-[250px] text-white overflow-hidden p-2">
         <div className="bg-blue-400 h-[75%] rounded-md overflow-hidden">
-          <Image className="" alt="game thumbnail" src={img ? img : ""} />
+          <Image
+            className=""
+            alt="game thumbnail"
+            src={img ? img : ""}
+          />
         </div>
         <div className="text-center">
           <p className="text-xl font-bold">{name}</p>

@@ -36,30 +36,32 @@ model FriendRequests {
 }
 
 model Game {
-  name       String  @id @unique
+  id         String  @id @default(cuid())
+  name       String  @unique
+  filename   String  @unique
   minPlayers Int
   maxPlayers Int
-  lobbies    Lobby[]
+  lobbies    Lobby[] @relation("GameLobbies")
 
   createdAt DateTime @default(now())
 }
 
 model Lobby {
   id         String  @id @default(cuid())
-  gameName   String
+  gameId     String
   hostId     String
   name       String
   password   String?
   inviteCode String
   capacity   Int
 
-  game  Game   @relation(fields: [gameName], references: [name], onDelete: Cascade)
+  game  Game   @relation("GameLobbies", fields: [gameId], references: [id], onDelete: Cascade)
   host  User   @relation("HostedLobbies", fields: [hostId], references: [id], onDelete: Cascade)
   users User[] @relation("JoinedLobbies")
 
   createdAt DateTime @default(now())
   userId    String?
 
-  @@index([gameName])
+  @@index([gameId])
   @@index([hostId])
 }
