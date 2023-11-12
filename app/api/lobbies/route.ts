@@ -6,7 +6,7 @@ import { db } from "@/lib/db";
 
 export async function POST(req: Request) {
   try {
-    const { name, gameId } = await req.json();
+    const { name, password, capacity, gameId } = await req.json();
     const user = await currentUser();
 
     if (!gameId) {
@@ -20,10 +20,10 @@ export async function POST(req: Request) {
     const lobby = await db.lobby.create({
       data: {
         name,
+        capacity,
+        password,
         gameId,
-        password: "password",
         inviteCode: uuidv4(),
-        capacity: 1,
         hostId: user.id,
         users: {
           connect: [{ id: user.id }],

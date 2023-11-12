@@ -1,16 +1,10 @@
 import { Button } from "@/components/ui/button";
+import { LobbyWithHost } from "@/types";
 import { ColumnDef, Column } from "@tanstack/react-table";
 import { Lock, ArrowUpDown } from "lucide-react";
 
-export type LobbyRow = {
-  hostName: string;
-  name: string;
-  hasPassword: boolean;
-  capacity: number;
-};
-
 interface SortableHeaderProps {
-  column: Column<LobbyRow>;
+  column: Column<LobbyWithHost>;
   header: string;
 }
 
@@ -26,7 +20,7 @@ const SortableHeader = ({ column, header }: SortableHeaderProps) => {
   );
 };
 
-export const columns: ColumnDef<LobbyRow>[] = [
+export const columns: ColumnDef<LobbyWithHost>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => (
@@ -46,10 +40,10 @@ export const columns: ColumnDef<LobbyRow>[] = [
     ),
   },
   {
-    accessorKey: "hasPassword",
+    accessorKey: "password",
     header: "Private",
     cell: ({ row }) => {
-      const hasPassword = row.getValue("hasPassword");
+      const hasPassword = !!row.getValue("password");
       return (
         <div className="">{hasPassword ? <Lock className="h-4" /> : ""}</div>
       );

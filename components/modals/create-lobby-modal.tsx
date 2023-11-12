@@ -23,19 +23,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { useModal } from "@/hooks/use-modal-store";
 import { useUser } from "@clerk/nextjs";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Lobby } from "@prisma/client";
-
-const formSchema = z.object({
-  name: z.string().min(1, {
-    message: "name is required",
-  }),
-  password: z.string(),
-});
 
 const CreateLobbyModal = () => {
   const { isOpen, onClose, type, data } = useModal();
@@ -44,6 +38,23 @@ const CreateLobbyModal = () => {
   const pathname = usePathname();
 
   const isModalOpen = isOpen && type === "createLobby";
+  const [minPlayers, setMinPlayers] = useState(0);
+  const [maxPlayers, setMaxPlayers] = useState(0);
+
+  const formSchema = z.object({
+    name: z
+      .string()
+      .min(1, {
+        message: "name is required",
+      })
+      .max(20, {
+        message: "Lobby name cannot be more than 20 characters",
+      }),
+    password: z.string().max(30, {
+      message: "Password cannot be more than 30 characters",
+    }),
+    capacity: z.number().gte(minPlayers).lte(maxPlayers),
+  });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -56,6 +67,12 @@ const CreateLobbyModal = () => {
   useEffect(() => {
     form.setValue("name", `${user?.username}'s lobby`);
   }, [user, form]);
+
+  useEffect(() => {
+    setMinPlayers(data.game?.minPlayers || 0);
+    setMaxPlayers(data.game?.maxPlayers || 0);
+    form.setValue("capacity", data.game?.minPlayers || 0);
+  }, [data]);
 
   const isLoading = form.formState.isSubmitting;
 
@@ -101,7 +118,7 @@ const CreateLobbyModal = () => {
             onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-8"
           >
-            <div className="space-y-8 px-6">
+            <div className="space-y-2 px-6">
               <FormField
                 control={form.control}
                 name="name"
@@ -119,6 +136,50 @@ const CreateLobbyModal = () => {
                       />
                     </FormControl>
                     <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="uppercase text-xs font-bold">
+                      Password
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled={isLoading}
+                        className="bg-zinc-300/50 border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                        placeholder="password"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="capacity"
+                render={({ field }) => (
+                  <FormItem>
+                    <div>
+                      <FormLabel className="uppercase text-xs font-bold">
+                        Number of Players
+                      </FormLabel>
+                      <span className="ml-4">{field.value}</span>
+                    </div>
+                    {minPlayers !== maxPlayers && (
+                      <FormControl>
+                        <Slider
+                          defaultValue={[minPlayers]}
+                          min={minPlayers}
+                          max={maxPlayers}
+                          step={1}
+                        />
+                      </FormControl>
+                    )}
                   </FormItem>
                 )}
               />

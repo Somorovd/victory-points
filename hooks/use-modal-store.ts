@@ -1,3 +1,4 @@
+import { LobbyWithHost } from "@/types";
 import { Game } from "@prisma/client";
 import { create } from "zustand";
 
@@ -5,6 +6,7 @@ export type ModalType = "createLobby" | "joinLobby";
 
 interface ModalData {
   game?: Game;
+  lobby?: LobbyWithHost;
 }
 
 interface ModalStore {

@@ -1,6 +1,6 @@
 "use client";
 
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,7 +9,6 @@ import { useForm } from "react-hook-form";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -25,53 +24,54 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useModal } from "@/hooks/use-modal-store";
-import { useUser } from "@clerk/nextjs";
-import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { Lobby } from "@prisma/client";
-
-const formSchema = z.object({
-  name: z.string().min(1, {
-    message: "name is required",
-  }),
-  password: z.string(),
-});
 
 const JoinLobbyModal = () => {
   const { isOpen, onClose, type, data } = useModal();
-  const { user } = useUser();
   const router = useRouter();
   const pathname = usePathname();
 
   const isModalOpen = isOpen && type === "joinLobby";
 
+  const formSchema = z
+    .object({
+      password: z.string().max(30),
+      passwordMatch: z.boolean(),
+    })
+    .refine((formData) => formData.passwordMatch, {
+      message: "Invalid password",
+      path: ["password"],
+    });
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
       password: "",
+      passwordMatch: true,
     },
   });
-
-  useEffect(() => {
-    form.setValue("name", `${user?.username}'s lobby`);
-  }, [user, form]);
 
   const isLoading = form.formState.isSubmitting;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const lobby = (await axios
-        .post("/api/lobbies", {
-          gameId: data?.game?.id as string,
+      const lobbyId = data?.lobby?.id as string;
+      await axios
+        .post(`/api/lobbies/${lobbyId}/join`, {
+          lobbyId,
           ...values,
         })
-        // what about bad requests or errors?
-        .then((res) => res.data)) as Lobby;
-
-      onClose();
-      form.reset();
-      router.push(`${pathname}/${lobby.id}`);
+        .then(() => {
+          onClose();
+          form.reset();
+          router.push(`${pathname}/${lobbyId}`);
+        })
+        .catch((error: AxiosError) => {
+          const resData = error.response?.data as z.infer<typeof formSchema>;
+          if (resData.password) {
+            form.setError("password", { message: resData.password });
+          }
+        });
     } catch (e) {
       console.log(e);
     }
@@ -90,45 +90,45 @@ const JoinLobbyModal = () => {
       <DialogContent className="bg-white text-black p-0 overflow-hidden">
         <DialogHeader className="pt-8 px-6">
           <DialogTitle className="text-2xl text-center font-bold">
-            Create a New {data?.game?.name} Lobby
+            Join {data?.lobby?.name} <br />
+            by {data.lobby?.host.username}
           </DialogTitle>
-          <DialogDescription className="text-center text-zinc-600">
-            Give your lobby a name and specify your prefered game settings
-          </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-8"
           >
-            <div className="space-y-8 px-6">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="uppercase text-xs font-bold">
-                      Lobby Name
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        disabled={isLoading}
-                        className="bg-zinc-300/50 border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-                        placeholder="Lobby name"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <div className="space-y-2 px-6">
+              {data.lobby?.password && (
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="uppercase text-xs font-bold">
+                        Password
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          disabled={isLoading}
+                          className="bg-zinc-300/50 border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                          placeholder="password"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
             </div>
             <DialogFooter className="bg-gray-100 px-6 py-4">
               <Button
                 disabled={isLoading}
                 variant="primary"
               >
-                Submit
+                Join
               </Button>
             </DialogFooter>
           </form>

@@ -27,11 +27,7 @@ const GameLobbySelector = ({ game, lobbies }: GameLobbySelectorProps) => {
           <Button onClick={() => onOpen("createLobby", { game })}>
             Create Lobby
           </Button>
-          <div className="flex flex-row gap-4">
-            <p>filters</p>
-            <p>filters</p>
-            <p>filters</p>
-          </div>
+          <div className="flex flex-row gap-4"></div>
         </div>
         <GameLobbyTable lobbies={lobbies} />
       </div>
