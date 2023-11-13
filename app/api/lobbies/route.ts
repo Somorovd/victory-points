@@ -6,12 +6,8 @@ import { db } from "@/lib/db";
 
 export async function POST(req: Request) {
   try {
-    const { name, password, capacity, gameId } = await req.json();
+    const { name, password, capacity, gameName } = await req.json();
     const user = await currentUser();
-
-    if (!gameId) {
-      return new NextResponse("Bad Request - missing gameId", { status: 400 });
-    }
 
     if (!user) {
       return new NextResponse("Unauthorized", { status: 401 });
@@ -22,7 +18,7 @@ export async function POST(req: Request) {
         name,
         capacity,
         password,
-        gameId,
+        gameName,
         inviteCode: uuidv4(),
         hostId: user.id,
         users: {

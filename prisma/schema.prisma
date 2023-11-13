@@ -36,9 +36,8 @@ model FriendRequests {
 }
 
 model Game {
-  id         String  @id @default(cuid())
+  filename   String  @id @unique
   name       String  @unique
-  filename   String  @unique
   minPlayers Int
   maxPlayers Int
   lobbies    Lobby[] @relation("GameLobbies")
@@ -48,19 +47,19 @@ model Game {
 
 model Lobby {
   id         String  @id @default(cuid())
-  gameId     String
+  gameName   String
   hostId     String
   name       String
   password   String?
   inviteCode String
   capacity   Int
 
-  game  Game   @relation("GameLobbies", fields: [gameId], references: [id], onDelete: Cascade)
+  game  Game   @relation("GameLobbies", fields: [gameName], references: [filename], onDelete: Cascade)
   host  User   @relation("HostedLobbies", fields: [hostId], references: [id], onDelete: Cascade)
   users User[] @relation("JoinedLobbies")
 
   createdAt DateTime @default(now())
 
-  @@index([gameId])
+  @@index([gameName])
   @@index([hostId])
 }

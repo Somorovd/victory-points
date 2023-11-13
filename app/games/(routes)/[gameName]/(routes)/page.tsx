@@ -1,31 +1,20 @@
+"use client";
+
 import { redirect } from "next/navigation";
-import GameAboutSection from "@/components/game/game-about-section";
 import GameLobbySelector from "@/components/game/game-lobby-selector";
-import { db } from "@/lib/db";
+import useStore from "@/hooks/use-store";
+import { useGames } from "@/hooks/use-games-store";
 
-const GamePage = async ({ params }: { params: { gameName: string } }) => {
-  const game = await db.game.findUnique({
-    where: { filename: params.gameName },
-    include: {
-      lobbies: {
-        include: {
-          host: true,
-        },
-      },
-    },
-  });
+const GamePage = ({ params }: { params: { gameName: string } }) => {
+  const gameStore = useStore(useGames, (state) => state);
 
-  if (!game) {
-    redirect("/games");
-  }
+  if (!gameStore) return null;
+  const game = gameStore.allGames[params.gameName];
+  if (!game) return redirect("/games");
 
   return (
     <div className="flex flex-col items-center">
-      <GameLobbySelector
-        game={game}
-        lobbies={game.lobbies}
-      />
-      <GameAboutSection game={game} />
+      <GameLobbySelector game={game} />
     </div>
   );
 };

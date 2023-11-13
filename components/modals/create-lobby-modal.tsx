@@ -80,7 +80,7 @@ const CreateLobbyModal = () => {
     try {
       const lobby = (await axios
         .post("/api/lobbies", {
-          gameId: data?.game?.id as string,
+          gameName: data?.game?.filename as string,
           ...values,
         })
         // what about bad requests or errors?
