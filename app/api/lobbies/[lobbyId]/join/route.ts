@@ -26,6 +26,15 @@ export async function POST(req: Request) {
       return new NextResponse(JSON.stringify(error), { status: 400 });
     }
 
+    await db.lobby.update({
+      where: { id: lobby.id },
+      data: {
+        users: {
+          connect: [{ id: user.id }],
+        },
+      },
+    });
+
     return new NextResponse("OK", { status: 200 });
   } catch (error) {
     console.log("[LOBBY_JOIN_POST", error);
