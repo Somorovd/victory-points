@@ -4,6 +4,8 @@ import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { ModalProvider } from "@/components/providers/modal-provider";
+import { SocketProvider } from "@/components/providers/socket-provider";
+
 import HeaderBar from "@/components/header-bar";
 
 export const metadata: Metadata = {
@@ -29,9 +31,11 @@ export default function RootLayout({
             enableSystem={false}
             storageKey="vp-theme"
           >
-            <ModalProvider />
-            <HeaderBar />
-            <div className="p-1">{children}</div>
+            <SocketProvider>
+              <ModalProvider />
+              <HeaderBar />
+              <div className="p-1">{children}</div>
+            </SocketProvider>
           </ThemeProvider>
         </body>
       </html>

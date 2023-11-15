@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
+import SocketIndicator from "../socket-indicator";
 
 interface GameContainerProps {
   lobbyId: string;
@@ -19,7 +20,10 @@ const GameContainer = ({
   }, [lobbyId, socketUrl]);
 
   return (
-    <>
+    <div className="flex flex-col">
+      <div>
+        <SocketIndicator />
+      </div>
       {sessionStorage.getItem("socketUrl") !== "undefined" && (
         <>
           <div id="game-container"></div>
@@ -29,7 +33,7 @@ const GameContainer = ({
           ></script>
         </>
       )}
-    </>
+    </div>
   );
 };
 
