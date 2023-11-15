@@ -5,6 +5,8 @@ import { Lobby, User } from "@prisma/client";
 
 export type LobbyWithHost = Lobby & { host: User };
 
+export type LobbyWithAllUsers = Lobby & { host: User; users: User[] };
+
 export type NextApiResponseServerIo = NextApiResponse & {
   socket: Socket & {
     server: NetServer & {

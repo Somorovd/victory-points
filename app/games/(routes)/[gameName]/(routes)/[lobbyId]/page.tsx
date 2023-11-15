@@ -26,6 +26,7 @@ const GameLobby = async ({ params }: { params: GameLobbyParams }) => {
         where: {
           id: params.lobbyId,
         },
+        include: { host: true, users: true },
       },
     },
   });
@@ -37,8 +38,8 @@ const GameLobby = async ({ params }: { params: GameLobbyParams }) => {
   return (
     <div className="h-full flex flex-row justify-center items-center">
       <GameContainer
-        lobbyId={params.lobbyId}
-        filename={game.filename}
+        lobby={lobby}
+        game={game}
         socketUrl={socketUrl}
       />
     </div>
