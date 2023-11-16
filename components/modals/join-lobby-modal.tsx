@@ -57,7 +57,7 @@ const JoinLobbyModal = () => {
     try {
       const lobbyId = data?.lobby?.id as string;
       await axios
-        .post(`/api/lobbies/${lobbyId}/join`, {
+        .post(`/api/socket/lobbies/join`, {
           lobbyId,
           ...values,
         })
