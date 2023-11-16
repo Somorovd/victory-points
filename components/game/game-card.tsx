@@ -5,7 +5,7 @@ import Image from "next/image";
 interface GameCardProps {
   author: string;
   filename: string;
-  img?: string;
+  img: string;
   name: string;
 }
 
@@ -15,9 +15,10 @@ const GameCard = ({ author, filename, img, name }: GameCardProps) => {
       <div className="bg-zinc-900 hover:bg-zinc-700 rounded-md h-[250px] text-zinc-100 overflow-hidden p-2">
         <div className="bg-blue-400 h-[75%] rounded-md overflow-hidden">
           <Image
-            className=""
             alt="game thumbnail"
-            src={img ? img : ""}
+            src={img}
+            width="100"
+            height="100"
           />
         </div>
         <div className="text-center">

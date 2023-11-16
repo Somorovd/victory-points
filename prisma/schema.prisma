@@ -41,6 +41,7 @@ model Game {
   minPlayers Int
   maxPlayers Int
   lobbies    Lobby[] @relation("GameLobbies")
+  image      String
 
   createdAt DateTime @default(now())
 }

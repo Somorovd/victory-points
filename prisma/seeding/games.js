@@ -2,11 +2,15 @@ const games = [
   {
     name: "Tic-Tac-Toe",
     filename: "tictactoe",
+    image:
+      "https://unsplash.com/photos/a-tic-tac-toe-game-is-shown-in-a-box-NqFfiZzGyUs",
     minPlayers: 2,
     maxPlayers: 2,
   },
   {
     name: "Hearts",
+    image:
+      "https://unsplash.com/photos/a-bunch-of-gold-hearts-are-in-a-tray-G5iBBLVo8zI",
     filename: "hearts",
     minPlayers: 4,
     maxPlayers: 4,

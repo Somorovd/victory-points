@@ -18,10 +18,11 @@ const GameBrowser = ({ games }: GameBrowserProps) => {
       >
         {Object.values(games).map((game) => (
           <GameCard
-            key={game.id}
+            key={game.name}
             author="dsomorov"
             filename={game.filename}
             name={game.name}
+            img={game.image}
           />
         ))}
       </div>
