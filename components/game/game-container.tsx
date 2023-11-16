@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { Component, useEffect } from "react";
 import SocketIndicator from "../socket-indicator";
 import LobbyUsersBar from "./lobby-users-bar";
 import { LobbyWithAllUsers } from "@/types";
@@ -16,7 +16,15 @@ const GameContainer = ({ lobby, game, socketUrl }: GameContainerProps) => {
   useEffect(() => {
     sessionStorage.setItem("roomId", lobby.id);
     sessionStorage.setItem("socketUrl", socketUrl || "undefined");
+    loadGame();
   }, [lobby, socketUrl]);
+
+  const loadGame = () => {
+    const script = document.createElement("script");
+    script.src = `/${game.filename}/main.js`;
+    script.async = true;
+    document.body.appendChild(script);
+  };
 
   return (
     <div className="flex flex-col">
@@ -30,10 +38,10 @@ const GameContainer = ({ lobby, game, socketUrl }: GameContainerProps) => {
       {sessionStorage.getItem("socketUrl") !== "undefined" && (
         <>
           <div id="game-container"></div>
-          <script
+          {/* <script
             src={`/${game.filename}/main.js`}
             async
-          ></script>
+          ></script> */}
         </>
       )}
     </div>
