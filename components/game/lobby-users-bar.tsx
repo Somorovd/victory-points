@@ -1,5 +1,6 @@
 import { User } from "@prisma/client";
 import LobbyUserIcon from "./lobby-user-icon";
+import { useLobbySocket } from "@/hooks/use-lobby-socket";
 
 interface LobbyUsersBarProps {
   users: User[];
@@ -7,6 +8,8 @@ interface LobbyUsersBarProps {
 }
 
 const LobbyUsersBar = ({ users, host }: LobbyUsersBarProps) => {
+  useLobbySocket({});
+
   return (
     <div className="flex flex-row gap-2">
       {users.map((user) => (

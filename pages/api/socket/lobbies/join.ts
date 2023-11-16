@@ -43,6 +43,10 @@ export default async function handler(
       },
     });
 
+    const room = `lobby:${lobbyId}`;
+    res.socket.server.io.emit("user-joined", user);
+    console.log("USER JOINED");
+
     return res.status(200).json({ message: "OK" });
   } catch (error) {
     console.log("[LOBBY_JOIN_POST", error);

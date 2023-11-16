@@ -5,6 +5,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { ModalProvider } from "@/components/providers/modal-provider";
 import { SocketProvider } from "@/components/providers/socket-provider";
+import { Toaster } from "react-hot-toast";
 
 import HeaderBar from "@/components/header-bar";
 
@@ -25,6 +26,7 @@ export default function RootLayout({
       >
         <head></head>
         <body>
+          <Toaster position="bottom-left" />
           <ThemeProvider
             attribute="class"
             defaultTheme="dark"
