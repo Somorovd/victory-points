@@ -1,10 +1,11 @@
 "use client";
 
-import React, { Component, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import SocketIndicator from "../socket-indicator";
 import LobbyUsersBar from "./lobby-users-bar";
 import { LobbyWithAllUsers } from "@/types";
-import { Game } from "@prisma/client";
+import { Game, Lobby } from "@prisma/client";
+import { useLobbySocket } from "@/hooks/use-lobby-socket";
 
 interface GameContainerProps {
   lobby: LobbyWithAllUsers;
@@ -13,6 +14,8 @@ interface GameContainerProps {
 }
 
 const GameContainer = ({ lobby, game, socketUrl }: GameContainerProps) => {
+  useLobbySocket({ lobby });
+
   useEffect(() => {
     sessionStorage.setItem("roomId", lobby.id);
     sessionStorage.setItem("socketUrl", socketUrl || "undefined");
@@ -38,10 +41,6 @@ const GameContainer = ({ lobby, game, socketUrl }: GameContainerProps) => {
       {sessionStorage.getItem("socketUrl") !== "undefined" && (
         <>
           <div id="game-container"></div>
-          {/* <script
-            src={`/${game.filename}/main.js`}
-            async
-          ></script> */}
         </>
       )}
     </div>

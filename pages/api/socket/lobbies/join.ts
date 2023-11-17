@@ -2,6 +2,7 @@ import { NextApiResponseServerIo } from "@/types";
 import { NextApiRequest } from "next";
 import { db } from "@/lib/db";
 import { currentUserPages } from "@/lib/current-user-pages";
+import { SocketEvents } from "@/lib/socket-events";
 
 export default async function handler(
   req: NextApiRequest,
@@ -44,8 +45,7 @@ export default async function handler(
     });
 
     const room = `lobby:${lobbyId}`;
-    res.socket.server.io.emit("user-joined", user);
-    console.log("USER JOINED");
+    res.socket.server.io.to(room).emit(SocketEvents.USER_JOINED, { user });
 
     return res.status(200).json({ message: "OK" });
   } catch (error) {

@@ -2,6 +2,8 @@ import { Server as NetServer } from "http";
 import { Server as ServerIO } from "socket.io";
 import { NextApiRequest } from "next";
 import { NextApiResponseServerIo } from "@/types";
+import { SocketEvents } from "@/lib/socket-events";
+import { User } from "@prisma/client";
 
 export const config = {
   api: {
@@ -22,13 +24,28 @@ const ioHandler = (req: NextApiRequest, res: NextApiResponseServerIo) => {
     io.on("connection", (socket) => {
       console.log(`user connected: ${socket.id}`);
 
-      socket.on("join", ({ room }: { room: string }) => {
-        console.log(`joining room /${room}/`);
-        socket.join(room);
-      });
+      socket.on(
+        SocketEvents.JOIN_ROOM,
+        ({ room, user }: { room: string; user: User }) => {
+          if (socket.rooms.has(room)) return;
+          console.log(`${user.username} joining room /${room}/`);
+          socket.join(room);
+          socket.to(room).emit(SocketEvents.USER_JOINED, { user });
+        }
+      );
 
       socket.on(
-        "gameEvent",
+        SocketEvents.LEAVE_ROOM,
+        ({ room, user }: { room: string; user: User }) => {
+          if (!socket.rooms.has(room)) return;
+          console.log(`${user.username} leaving room /${room}/`);
+          socket.to(room).emit(SocketEvents.USER_LEFT, { user });
+          socket.leave(room);
+        }
+      );
+
+      socket.on(
+        SocketEvents.GAME_EVENT,
         ({
           room,
           event,
@@ -42,10 +59,6 @@ const ioHandler = (req: NextApiRequest, res: NextApiResponseServerIo) => {
           io.to(room).emit(event, data);
         }
       );
-    });
-
-    io.on("disconnect", (socket) => {
-      console.log(`user disconnected: ${socket.id}`);
     });
   }
 

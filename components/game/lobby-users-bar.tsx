@@ -8,8 +8,6 @@ interface LobbyUsersBarProps {
 }
 
 const LobbyUsersBar = ({ users, host }: LobbyUsersBarProps) => {
-  useLobbySocket({});
-
   return (
     <div className="flex flex-row gap-2">
       {users.map((user) => (
