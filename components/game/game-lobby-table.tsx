@@ -5,32 +5,33 @@ import DataTable from "@/components/ui/data-table";
 import { LobbyWithHost } from "@/types";
 import { Row } from "@tanstack/react-table";
 import { useModal } from "@/hooks/use-modal-store";
-import useStore from "@/hooks/use-store";
-import { useGames } from "@/hooks/use-games-store";
 import { Game } from "@prisma/client";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const GameLobbyTable = ({ game }: { game: Game }) => {
   const { onOpen } = useModal();
-  const [isMounted, setIsMounted] = useState(false);
-  const gameStore = useStore(useGames, (state) => state);
+  const [isLoading, setIsLoading] = useState(true);
+  const [columnData, setColumnData] = useState<LobbyWithHost[]>([]);
 
   useEffect(() => {
-    if (!gameStore || isMounted) return;
-    gameStore.fetchLobbies(game.filename);
-    setIsMounted(true);
-  }, [gameStore]);
+    (async () => {
+      const lobbies = (await axios
+        .get(`/api/games/${game.filename}/lobbies`)
+        .then((res) => res.data)) as LobbyWithHost[];
 
-  if (!gameStore || !isMounted || gameStore.fetchStatus === "PENDING")
-    return <div>Loading...</div>;
+      const data: LobbyWithHost[] = lobbies.map((lobby) => ({
+        hostName: lobby.host.username,
+        hasPassword: !!lobby.password,
+        ...lobby,
+      }));
 
-  const data: LobbyWithHost[] = Object.values(gameStore.currentLobbies).map(
-    (lobby) => ({
-      hostName: lobby.host.username,
-      hasPassword: !!lobby.password,
-      ...lobby,
-    })
-  );
+      setColumnData(data);
+      setIsLoading(false);
+    })();
+  }, [game]);
+
+  if (isLoading) return <div>Loading...</div>;
 
   const onClick = (row: Row<LobbyWithHost>) => {
     onOpen("joinLobby", { lobby: row.original });
@@ -39,7 +40,7 @@ const GameLobbyTable = ({ game }: { game: Game }) => {
   return (
     <DataTable
       columns={columns}
-      data={data}
+      data={columnData}
       onClick={onClick}
     />
   );

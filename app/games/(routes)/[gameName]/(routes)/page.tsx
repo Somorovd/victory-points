@@ -1,15 +1,12 @@
-"use client";
-
 import { redirect } from "next/navigation";
 import GameLobbySelector from "@/components/game/game-lobby-selector";
-import useStore from "@/hooks/use-store";
-import { useGames } from "@/hooks/use-games-store";
+import { db } from "@/lib/db";
 
-const GamePage = ({ params }: { params: { gameName: string } }) => {
-  const gameStore = useStore(useGames, (state) => state);
+const GamePage = async ({ params }: { params: { gameName: string } }) => {
+  const game = await db.game.findFirst({
+    where: { name: params.gameName },
+  });
 
-  if (!gameStore) return null;
-  const game = gameStore.allGames[params.gameName];
   if (!game) return redirect("/games");
 
   return (

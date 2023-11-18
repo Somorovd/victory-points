@@ -1,21 +1,19 @@
-"use client";
-
 import GameAboutSection from "@/components/game/game-about-section";
-import { useGames } from "@/hooks/use-games-store";
-import useStore from "@/hooks/use-store";
+import { db } from "@/lib/db";
+import { Game } from "@prisma/client";
 import { redirect } from "next/navigation";
 
-const GamePageLayout = ({
+const GamePageLayout = async ({
   children,
   params,
 }: {
   children: React.ReactNode;
   params: { gameName: string };
 }) => {
-  const gameStore = useStore(useGames, (state) => state);
+  const game = await db.game.findFirst({
+    where: { name: params.gameName },
+  });
 
-  if (!gameStore) return null;
-  const game = gameStore.allGames[params.gameName];
   if (!game) return redirect("/games");
 
   return (
