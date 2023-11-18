@@ -35,18 +35,6 @@ export default async function handler(
       return res.status(400).json(error);
     }
 
-    await db.lobby.update({
-      where: { id: lobby.id },
-      data: {
-        users: {
-          connect: [{ id: user.id }],
-        },
-      },
-    });
-
-    const room = `lobby:${lobbyId}`;
-    res.socket.server.io.to(room).emit(SocketEvents.USER_JOINED, { user });
-
     return res.status(200).json({ message: "OK" });
   } catch (error) {
     console.log("[LOBBY_JOIN_POST", error);

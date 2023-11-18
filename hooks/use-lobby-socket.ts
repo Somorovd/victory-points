@@ -17,7 +17,7 @@ export const useLobbySocket = ({ lobby }: LobbySocketProps) => {
   useEffect(() => {
     if (!socket || !user) return;
 
-    socket.emit(SocketEvents.JOIN_ROOM, { room, user });
+    socket.emit(SocketEvents.JOIN_ROOM, { lobbyId: lobby.id, user });
 
     socket.on(SocketEvents.USER_JOINED, ({ user }: { user: User }) => {
       // update store with the new user ->
@@ -32,7 +32,7 @@ export const useLobbySocket = ({ lobby }: LobbySocketProps) => {
     });
 
     const handleBeforeUnload = () => {
-      socket.emit(SocketEvents.LEAVE_ROOM, { room, user });
+      socket.emit(SocketEvents.LEAVE_ROOM, { lobbyId: lobby.id, user });
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
@@ -42,5 +42,5 @@ export const useLobbySocket = ({ lobby }: LobbySocketProps) => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
       window.removeEventListener("popstate", handleBeforeUnload);
     };
-  }, [user]);
+  }, [user, socket]);
 };
