@@ -14,12 +14,12 @@ const GameCard = ({ author, filename, img, name }: GameCardProps) => {
     <Link href={`/games/${filename}`}>
       <div className="bg-zinc-800 hover:bg-zinc-700 rounded-md h-[250px] text-zinc-100 overflow-hidden p-2">
         <div className="bg-blue-400 h-[75%] rounded-md overflow-hidden">
-          <Image
+          {/* <Image
             alt="game thumbnail"
             src={img}
             width="100"
             height="100"
-          />
+          /> */}
         </div>
         <div className="text-center">
           <p className="text-xl font-bold">{name}</p>
