@@ -17,11 +17,17 @@ export const useLobbySocket = ({ lobby }: LobbySocketProps) => {
   const { user } = useUser();
   const { addUser, removeUser } = useLobby();
 
+  // useLifetimeLogging("useLobbySocket");
+
   const handleBeforeUnload = () => {
+    console.log("useLobbySocket Unload", socket?.id);
     socket?.emit(SocketEvents.LEAVE_ROOM, { lobbyId: lobby.id, user });
   };
 
+  // console.log("before useEffect: ", socket?.id);
+
   useEffect(() => {
+    console.log("useffect: ", socket?.id, user?.username);
     if (!socket || !user) return;
 
     socket.emit(SocketEvents.JOIN_ROOM, { lobbyId: lobby.id, user });
@@ -41,13 +47,12 @@ export const useLobbySocket = ({ lobby }: LobbySocketProps) => {
     socket.on(SocketEvents.USER_JOINED, onUserJoined);
     socket.on(SocketEvents.USER_LEFT, onUserLeft);
     window.addEventListener("beforeunload", handleBeforeUnload);
-    window.addEventListener("popstate", handleBeforeUnload);
 
     return () => {
+      handleBeforeUnload();
       socket.off(SocketEvents.USER_JOINED, onUserJoined);
       socket.off(SocketEvents.USER_LEFT, onUserLeft);
       window.removeEventListener("beforeunload", handleBeforeUnload);
-      window.removeEventListener("popstate", handleBeforeUnload);
     };
   }, [user, socket]);
 };

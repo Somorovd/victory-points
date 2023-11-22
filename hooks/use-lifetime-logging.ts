@@ -12,6 +12,7 @@ export const useLifetimeLogging = (name: string) => {
     window.addEventListener("beforeunload", handleUnload);
 
     return () => {
+      handleUnload();
       console.log(`cleanup ${name}`);
       window.removeEventListener("beforeunload", handleUnload);
     };
