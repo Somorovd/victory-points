@@ -1,6 +1,5 @@
 import GameAboutSection from "@/components/game/game-about-section";
 import { db } from "@/lib/db";
-import { Game } from "@prisma/client";
 import { redirect } from "next/navigation";
 
 const GamePageLayout = async ({
@@ -11,7 +10,7 @@ const GamePageLayout = async ({
   params: { gameName: string };
 }) => {
   const game = await db.game.findFirst({
-    where: { name: params.gameName },
+    where: { filename: params.gameName },
   });
 
   if (!game) return redirect("/games");
@@ -20,7 +19,7 @@ const GamePageLayout = async ({
     <div className="h-full w-full m-auto">
       <div>{children}</div>
       <div>
-        <GameAboutSection game={game} />
+        <GameAboutSection game={game!} />
       </div>
     </div>
   );

@@ -19,7 +19,7 @@ const GameLobby = async ({ params }: { params: GameLobbyParams }) => {
 
   const game = await db.game.findUnique({
     where: {
-      name: params.gameName,
+      filename: params.gameName,
     },
     include: {
       lobbies: {

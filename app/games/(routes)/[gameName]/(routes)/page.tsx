@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 
 const GamePage = async ({ params }: { params: { gameName: string } }) => {
   const game = await db.game.findFirst({
-    where: { name: params.gameName },
+    where: { filename: params.gameName },
   });
 
   if (!game) return redirect("/games");
