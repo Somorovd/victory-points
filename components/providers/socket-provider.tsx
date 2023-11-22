@@ -1,5 +1,6 @@
 "use client";
 
+import useLifetimeLogging from "@/hooks/use-lifetime-logging";
 import { createContext, useContext, useEffect, useState } from "react";
 import { io as ClientIO } from "socket.io-client";
 
@@ -18,14 +19,20 @@ export const useSocket = () => {
 };
 
 export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
-  const [socket, setSocket] = useState(null);
+  const [socket, setSocket] = useState<any | null>(null);
   const [isConnected, setIsConnected] = useState(false);
+
+  const handleUnload = () => {
+    console.log("Socket disconnecting");
+    socket?.disconnect();
+  };
 
   useEffect(() => {
     const socketInstance = new (ClientIO as any)(process.env.BASE_URL!, {
       path: "/api/socket/io",
       addTrailingSlash: false,
     });
+    console.log(`socket connected: ${socketInstance.id}`);
 
     socketInstance.on("connect", () => {
       setIsConnected(true);
@@ -37,8 +44,9 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
     setSocket(socketInstance);
 
+    window.addEventListener("unload", handleUnload);
     return () => {
-      socketInstance.disconnect();
+      window.removeEventListener("unload", handleUnload);
     };
   }, []);
 

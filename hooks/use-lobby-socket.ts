@@ -1,9 +1,12 @@
+"use client";
 import { useSocket } from "@/components/providers/socket-provider";
 import { SocketEvents } from "@/lib/socket-events";
 import { useUser } from "@clerk/nextjs";
 import { Lobby, User } from "@prisma/client";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
+import { useLobby } from "./use-lobby-store";
 import toast from "react-hot-toast";
+import useLifetimeLogging from "./use-lifetime-logging";
 
 type LobbySocketProps = {
   lobby: Lobby;
@@ -12,33 +15,37 @@ type LobbySocketProps = {
 export const useLobbySocket = ({ lobby }: LobbySocketProps) => {
   const { socket } = useSocket();
   const { user } = useUser();
-  const room = `lobby:${lobby.id}`;
+  const { addUser, removeUser } = useLobby();
+
+  const handleBeforeUnload = () => {
+    socket?.emit(SocketEvents.LEAVE_ROOM, { lobbyId: lobby.id, user });
+  };
 
   useEffect(() => {
     if (!socket || !user) return;
 
     socket.emit(SocketEvents.JOIN_ROOM, { lobbyId: lobby.id, user });
 
-    socket.on(SocketEvents.USER_JOINED, ({ user }: { user: User }) => {
-      // update store with the new user ->
-      // causing a rerender in the lobby users component
+    const onUserJoined = ({ user }: { user: User }) => {
       toast(`${user.username} joined!`);
+      addUser(user);
       console.log(`${user.username} joined!`);
-    });
-
-    socket.on(SocketEvents.USER_LEFT, ({ user }: { user: User }) => {
-      toast(`${user.username} left.`);
-      console.log(`${user.username} left.`);
-    });
-
-    const handleBeforeUnload = () => {
-      socket.emit(SocketEvents.LEAVE_ROOM, { lobbyId: lobby.id, user });
     };
 
+    const onUserLeft = ({ user }: { user: User }) => {
+      toast(`${user.username} left.`);
+      removeUser(user);
+      console.log(`${user.username} left.`);
+    };
+
+    socket.on(SocketEvents.USER_JOINED, onUserJoined);
+    socket.on(SocketEvents.USER_LEFT, onUserLeft);
     window.addEventListener("beforeunload", handleBeforeUnload);
     window.addEventListener("popstate", handleBeforeUnload);
 
     return () => {
+      socket.off(SocketEvents.USER_JOINED, onUserJoined);
+      socket.off(SocketEvents.USER_LEFT, onUserLeft);
       window.removeEventListener("beforeunload", handleBeforeUnload);
       window.removeEventListener("popstate", handleBeforeUnload);
     };

@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import SocketIndicator from "../socket-indicator";
+import React, { useEffect } from "react";
 import LobbyUsersBar from "./lobby-users-bar";
 import { LobbyWithAllUsers } from "@/types";
-import { Game, Lobby } from "@prisma/client";
+import { Game } from "@prisma/client";
 import { useLobbySocket } from "@/hooks/use-lobby-socket";
 
 interface GameContainerProps {
@@ -32,7 +31,6 @@ const GameContainer = ({ lobby, game, socketUrl }: GameContainerProps) => {
   return (
     <div className="flex flex-col">
       <div>
-        <SocketIndicator />
         <LobbyUsersBar
           users={lobby.users}
           host={lobby.host}

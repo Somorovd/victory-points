@@ -2,7 +2,6 @@ import { NextApiResponseServerIo } from "@/types";
 import { NextApiRequest } from "next";
 import { db } from "@/lib/db";
 import { currentUserPages } from "@/lib/current-user-pages";
-import { SocketEvents } from "@/lib/socket-events";
 
 export default async function handler(
   req: NextApiRequest,
@@ -34,6 +33,11 @@ export default async function handler(
       const error = { password: "Invalid password" };
       return res.status(400).json(error);
     }
+
+    await db.lobby.update({
+      where: { id: lobby.id },
+      data: { users: { connect: { id: user.id } } },
+    });
 
     return res.status(200).json({ message: "OK" });
   } catch (error) {
