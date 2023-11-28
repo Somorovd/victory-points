@@ -13,7 +13,7 @@ export default async function handler(
   }
 
   try {
-    const { lobbyId } = req.body;
+    const { lobbyId, sockedId } = req.body;
     const user = await currentUserPages(req);
 
     if (!lobbyId) {
@@ -42,7 +42,9 @@ export default async function handler(
       });
     }
 
-    res.socket?.emit(SocketEvents.LEAVE_ROOM, { lobbyId: lobby.id, user });
+    const room = `lobby:${lobby.id}`;
+    res.socket?.server.io.in(sockedId).socketsLeave(room);
+    res.socket?.server.io.to(room).emit(SocketEvents.USER_LEFT, { user });
 
     return res.status(200).json({ message: "OK" });
   } catch (error) {

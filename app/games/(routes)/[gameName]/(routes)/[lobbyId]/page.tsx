@@ -36,13 +36,11 @@ const GameLobby = async ({ params }: { params: GameLobbyParams }) => {
   if (!lobby) return redirect(`/games/${params.gameName}`);
 
   return (
-    <div className="h-full flex flex-row justify-center items-center">
-      <GameContainer
-        lobby={lobby}
-        game={game}
-        socketUrl={socketUrl}
-      />
-    </div>
+    <GameContainer
+      lobby={lobby}
+      game={game}
+      socketUrl={socketUrl}
+    />
   );
 };
 

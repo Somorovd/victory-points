@@ -27,18 +27,9 @@ const ioHandler = (req: NextApiRequest, res: NextApiResponseServerIo) => {
 
       socket.on(
         SocketEvents.JOIN_ROOM,
-        async ({ lobbyId, user }: { lobbyId: string; user: User }) => {
+        ({ lobbyId, user }: { lobbyId: string; user: User }) => {
           const room = `lobby:${lobbyId}`;
           if (socket.rooms.has(room)) return;
-
-          await db.lobby.update({
-            where: { id: lobbyId },
-            data: {
-              users: {
-                connect: [{ id: user.id }],
-              },
-            },
-          });
 
           console.log(`${user.username} joining room /${room}/`);
           socket.join(room);
@@ -48,21 +39,9 @@ const ioHandler = (req: NextApiRequest, res: NextApiResponseServerIo) => {
 
       socket.on(
         SocketEvents.LEAVE_ROOM,
-        async ({ lobbyId, user }: { lobbyId: string; user: User }) => {
+        ({ lobbyId, user }: { lobbyId: string; user: User }) => {
           const room = `lobby:${lobbyId}`;
           if (!socket.rooms.has(room)) return;
-
-          try {
-            await db.lobby.update({
-              where: { id: lobbyId },
-              data: {
-                users: {
-                  disconnect: [{ id: user.id }],
-                },
-              },
-              include: { users: true },
-            });
-          } catch (e) {}
 
           console.log(`${user.username} leaving room /${room}/`);
           socket.to(room).emit(SocketEvents.USER_LEFT, { user });
@@ -85,6 +64,10 @@ const ioHandler = (req: NextApiRequest, res: NextApiResponseServerIo) => {
           io.to(room).emit(event, data);
         }
       );
+
+      socket.on("disconnect", () => {
+        console.log("socket disconnected");
+      });
     });
   }
 

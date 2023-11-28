@@ -25,11 +25,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useModal } from "@/hooks/use-modal-store";
 import { useRouter, usePathname } from "next/navigation";
+import { useSocket } from "../providers/socket-provider";
 
 const JoinLobbyModal = () => {
   const { isOpen, onClose, type, data } = useModal();
   const router = useRouter();
   const pathname = usePathname();
+  const { socket } = useSocket();
 
   const isModalOpen = isOpen && type === "joinLobby";
 
@@ -59,6 +61,7 @@ const JoinLobbyModal = () => {
       await axios
         .post(`/api/socket/lobbies/join`, {
           lobbyId,
+          socketId: socket.id,
           ...values,
         })
         .then(() => {

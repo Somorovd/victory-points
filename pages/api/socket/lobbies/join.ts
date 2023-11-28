@@ -2,6 +2,7 @@ import { NextApiResponseServerIo } from "@/types";
 import { NextApiRequest } from "next";
 import { db } from "@/lib/db";
 import { currentUserPages } from "@/lib/current-user-pages";
+import { SocketEvents } from "@/lib/socket-events";
 
 export default async function handler(
   req: NextApiRequest,
@@ -12,7 +13,7 @@ export default async function handler(
   }
 
   try {
-    const { password, lobbyId } = req.body;
+    const { password, lobbyId, socketId } = req.body;
     const user = await currentUserPages(req);
 
     if (!lobbyId) {
@@ -37,6 +38,12 @@ export default async function handler(
     await db.lobby.update({
       where: { id: lobby.id },
       data: { users: { connect: { id: user.id } } },
+    });
+
+    const room = `lobby:${lobby.id}`;
+    res.socket?.server.io.in(socketId).socketsJoin(room);
+    res.socket?.server.io.to(room).emit(SocketEvents.USER_JOINED, {
+      user,
     });
 
     return res.status(200).json({ message: "OK" });

@@ -30,12 +30,14 @@ import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Lobby } from "@prisma/client";
+import { useSocket } from "../providers/socket-provider";
 
 const CreateLobbyModal = () => {
   const { isOpen, onClose, type, data } = useModal();
   const { user } = useUser();
   const router = useRouter();
   const pathname = usePathname();
+  const { socket } = useSocket();
 
   const isModalOpen = isOpen && type === "createLobby";
   const [minPlayers, setMinPlayers] = useState(0);
@@ -79,8 +81,9 @@ const CreateLobbyModal = () => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       const lobby = (await axios
-        .post("/api/lobbies", {
+        .post("/api/socket/lobbies/new", {
           gameName: data?.game?.filename as string,
+          socketId: socket.id,
           ...values,
         })
         // what about bad requests or errors?

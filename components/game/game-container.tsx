@@ -8,6 +8,7 @@ import { useLobbySocket } from "@/hooks/use-lobby-socket";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { useSocket } from "../providers/socket-provider";
 
 interface GameContainerProps {
   lobby: LobbyWithAllUsers;
@@ -17,6 +18,7 @@ interface GameContainerProps {
 
 const GameContainer = ({ lobby, game, socketUrl }: GameContainerProps) => {
   useLobbySocket({ lobby });
+  const { socket } = useSocket();
   const router = useRouter();
 
   useEffect(() => {
@@ -36,6 +38,7 @@ const GameContainer = ({ lobby, game, socketUrl }: GameContainerProps) => {
     try {
       await axios.post(`/api/socket/lobbies/leave`, {
         lobbyId: lobby.id,
+        socketId: socket.id,
       });
       router.push(`/games/${game.filename}`);
     } catch (e) {

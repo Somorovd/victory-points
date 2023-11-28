@@ -14,34 +14,32 @@ type LobbySocketProps = {
 
 export const useLobbySocket = ({ lobby }: LobbySocketProps) => {
   const { socket } = useSocket();
-  const { user } = useUser();
-  const { addUser, removeUser } = useLobby();
+  const { user: currentUser } = useUser();
+  const { users, addUser, removeUser } = useLobby();
 
   // useLifetimeLogging("useLobbySocket");
 
   const handleBeforeUnload = () => {
     console.log("useLobbySocket Unload", socket?.id);
-    socket?.emit(SocketEvents.LEAVE_ROOM, { lobbyId: lobby.id, user });
+    // socket?.emit(SocketEvents.LEAVE_ROOM, { lobbyId: lobby.id, user });
   };
 
   // console.log("before useEffect: ", socket?.id);
 
   useEffect(() => {
-    console.log("useffect: ", socket?.id, user?.username);
-    if (!socket || !user) return;
-
-    socket.emit(SocketEvents.JOIN_ROOM, { lobbyId: lobby.id, user });
+    console.log("useffect: ", socket?.id, currentUser?.username);
+    if (!socket || !currentUser) return;
 
     const onUserJoined = ({ user }: { user: User }) => {
+      // if (users[user.id] || user.id === currentUser.id) return;
       toast(`${user.username} joined!`);
       addUser(user);
-      console.log(`${user.username} joined!`);
     };
 
     const onUserLeft = ({ user }: { user: User }) => {
+      if (user.id === currentUser.id) return;
       toast(`${user.username} left.`);
       removeUser(user);
-      console.log(`${user.username} left.`);
     };
 
     socket.on(SocketEvents.USER_JOINED, onUserJoined);
@@ -54,5 +52,5 @@ export const useLobbySocket = ({ lobby }: LobbySocketProps) => {
       socket.off(SocketEvents.USER_LEFT, onUserLeft);
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
-  }, [user, socket]);
+  }, [currentUser, socket]);
 };
