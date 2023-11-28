@@ -5,6 +5,9 @@ import LobbyUsersBar from "./lobby-users-bar";
 import { LobbyWithAllUsers } from "@/types";
 import { Game } from "@prisma/client";
 import { useLobbySocket } from "@/hooks/use-lobby-socket";
+import { Button } from "@/components/ui/button";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 interface GameContainerProps {
   lobby: LobbyWithAllUsers;
@@ -14,6 +17,7 @@ interface GameContainerProps {
 
 const GameContainer = ({ lobby, game, socketUrl }: GameContainerProps) => {
   useLobbySocket({ lobby });
+  const router = useRouter();
 
   useEffect(() => {
     sessionStorage.setItem("roomId", lobby.id);
@@ -28,14 +32,30 @@ const GameContainer = ({ lobby, game, socketUrl }: GameContainerProps) => {
     document.body.appendChild(script);
   };
 
+  const leaveLobby = async () => {
+    try {
+      await axios.post(`/api/socket/lobbies/leave`, {
+        lobbyId: lobby.id,
+      });
+      router.push(`/games/${game.filename}`);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   return (
-    <div className="flex flex-col">
-      <div>
-        <LobbyUsersBar
-          users={lobby.users}
-          host={lobby.host}
-        />
-      </div>
+    <div className="flex flex-col gap-4">
+      <Button
+        onClick={leaveLobby}
+        className="w-fit"
+      >
+        Leave Lobby
+      </Button>
+
+      <LobbyUsersBar
+        users={lobby.users}
+        host={lobby.host}
+      />
       {sessionStorage.getItem("socketUrl") !== "undefined" && (
         <>
           <div id="game-container"></div>
