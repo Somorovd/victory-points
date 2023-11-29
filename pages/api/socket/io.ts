@@ -4,8 +4,7 @@ import { NextApiRequest } from "next";
 import { NextApiResponseServerIo } from "@/types";
 import { SocketEvents } from "@/lib/socket-events";
 import { User } from "@prisma/client";
-import { db } from "@/lib/db";
-
+import { currentUserPages } from "@/lib/current-user-pages";
 export const config = {
   api: {
     bodyParser: false,
@@ -24,6 +23,7 @@ const ioHandler = (req: NextApiRequest, res: NextApiResponseServerIo) => {
 
     io.on("connection", (socket) => {
       console.log(`user connected: ${socket.id}`);
+      const socketId = socket.id;
 
       socket.on(
         SocketEvents.JOIN_ROOM,
@@ -33,7 +33,7 @@ const ioHandler = (req: NextApiRequest, res: NextApiResponseServerIo) => {
 
           console.log(`${user.username} joining room /${room}/`);
           socket.join(room);
-          socket.to(room).emit(SocketEvents.USER_JOINED, { user });
+          socket.to(room).emit(SocketEvents.USER_JOINED, { user, socketId });
         }
       );
 
@@ -44,7 +44,7 @@ const ioHandler = (req: NextApiRequest, res: NextApiResponseServerIo) => {
           if (!socket.rooms.has(room)) return;
 
           console.log(`${user.username} leaving room /${room}/`);
-          socket.to(room).emit(SocketEvents.USER_LEFT, { user });
+          socket.to(room).emit(SocketEvents.USER_LEFT, { user, socketId });
           socket.leave(room);
         }
       );
@@ -65,8 +65,10 @@ const ioHandler = (req: NextApiRequest, res: NextApiResponseServerIo) => {
         }
       );
 
-      socket.on("disconnect", () => {
-        console.log("socket disconnected");
+      socket.on("disconnect", async () => {
+        console.log(`socket disconnected: ${socket.id}`);
+        const user = await currentUserPages(req);
+        socket.broadcast.emit(SocketEvents.USER_LEFT, { user, socketId });
       });
     });
   }

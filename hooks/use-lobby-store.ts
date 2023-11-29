@@ -2,13 +2,15 @@ import { normalizeDatabaseData } from "@/lib/utils";
 import { User } from "@prisma/client";
 import { create } from "zustand";
 
+type UserWithSocketId = User & { socketId?: string};
+
 interface LobbyStore {
-  users: Record<string, User>;
-  host: User | null;
-  setUsers: (users: User[]) => void;
-  setHost: (host: User) => void;
-  addUser: (user: User) => void;
-  removeUser: (user: User) => void;
+  users: Record<string, UserWithSocketId>;
+  host: UserWithSocketId | null;
+  setUsers: (users: UserWithSocketId[]) => void;
+  setHost: (host: UserWithSocketId) => void;
+  addUser: (user: UserWithSocketId) => void;
+  removeUser: (user: UserWithSocketId) => void;
 }
 
 export const useLobby = create<LobbyStore>((set, get) => ({
