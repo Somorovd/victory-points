@@ -1,7 +1,8 @@
+"use client";
+
 import { User } from "@prisma/client";
 import LobbyUserIcon from "./lobby-user-icon";
 import { useLobby } from "@/hooks/use-lobby-store";
-import { useEffect } from "react";
 
 interface LobbyUsersBarProps {
   users: User[];
@@ -9,12 +10,7 @@ interface LobbyUsersBarProps {
 }
 
 const LobbyUsersBar = ({ users, host }: LobbyUsersBarProps) => {
-  const { users: lobbyUsers, host: lobbyHost, setUsers, setHost } = useLobby();
-
-  useEffect(() => {
-    setUsers(users);
-    setHost(host);
-  }, []);
+  const { users: lobbyUsers, host: lobbyHost } = useLobby();
 
   return (
     <div className="flex flex-row gap-2">

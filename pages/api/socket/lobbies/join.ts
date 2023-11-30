@@ -44,6 +44,7 @@ export default async function handler(
     res.socket?.server.io.in(socketId).socketsJoin(room);
     res.socket?.server.io.to(room).emit(SocketEvents.USER_JOINED, {
       user,
+      socketId,
     });
 
     return res.status(200).json({ message: "OK" });

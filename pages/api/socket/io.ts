@@ -22,7 +22,7 @@ const ioHandler = (req: NextApiRequest, res: NextApiResponseServerIo) => {
     res.socket.server.io = io;
 
     io.on("connection", (socket) => {
-      console.log(`user connected: ${socket.id}`);
+      console.log(`socket connected: ${socket.id}`);
       const socketId = socket.id;
 
       socket.on(
@@ -31,19 +31,18 @@ const ioHandler = (req: NextApiRequest, res: NextApiResponseServerIo) => {
           const room = `lobby:${lobbyId}`;
           if (socket.rooms.has(room)) return;
 
-          console.log(`${user.username} joining room /${room}/`);
           socket.join(room);
-          socket.to(room).emit(SocketEvents.USER_JOINED, { user, socketId });
+          socket
+            .to(room)
+            .emit(SocketEvents.USER_JOINED, { user, socketId: socket.id });
         }
       );
 
       socket.on(
         SocketEvents.LEAVE_ROOM,
         ({ lobbyId, user }: { lobbyId: string; user: User }) => {
-          const room = `lobby:${lobbyId}`;
+          const room = `${socket.id} lobby:${lobbyId}`;
           if (!socket.rooms.has(room)) return;
-
-          console.log(`${user.username} leaving room /${room}/`);
           socket.to(room).emit(SocketEvents.USER_LEFT, { user, socketId });
           socket.leave(room);
         }
